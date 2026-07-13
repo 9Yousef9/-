@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Princess Janfiza - I'm Sorry</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght=400;700;900&family=Amiri:ital,wght=0,400;0,700;1,400&family=Reem+Kufi:wght=400;700&family=Tajawal:wght=400;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ==========================================================================
+           🎨 1. تهيئة النظام والخلفيات الطبيعية والـ Canvas المتقدمة
+           ========================================================================== */
+        * {
+            box-sizing: border-box;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(rgba(10, 0, 20, 0.2), rgba(20, 0, 35, 0.25)), 
+                        url('https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?q=80&w=1920') no-repeat center center fixed;
+            background-size: cover;
+            color: #ffffff;
+            overflow-x: hidden;
+            text-align: center;
+            font-family: 'Cairo', sans-serif;
+            min-height: 100vh;
+            user-select: none;
+            perspective: 1000px;
+            transition: background 1.5s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* ==========================================================================
+           🦋 2. جزيئات الفراشات والقلوب المتساقطة ديناميكياً
+           ========================================================================== */
+        .ambient-particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 2;
+            animation: advancedFall 8s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+            opacity: 0;
+            filter: drop-shadow(0 0 12px currentColor);
+            font-weight: 900;
+            will-change: transform, opacity;
+            top: -60px;
+        }
+
+        @keyframes advancedFall {
+            0% { transform: translateY(0) translateX(0) scale(0.5) rotate(0deg); opacity: 0; }
+            15% { opacity: 0.9; }
+            85% { opacity: 0.9; }
+            100% { transform: translateY(105vh) translateX(var(--drift-end)) scale(1.5) rotate(var(--rot-end)); opacity: 0; }
+        }
+
+        /* ==========================================================================
+           🎬 3. البطاقات الكريستالية الزجاجية المتقدمة (Ultra-Glassmorphism 3D)
+           ========================================================================== */
+        .screen { 
+            display: none; 
+            min-height: 100vh; 
+            padding: 40px 20px; 
+            position: relative; 
+            z-index: 5;
+            opacity: 0;
+            transform: translateY(-30px) rotateX(5deg);
+            transform-style: preserve-3d;
+            transition: opacity 1s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                        transform 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .screen.active { 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            opacity: 1;
+            transform: translateY(0) rotateX(0deg);
+        }
+        
+        .page-container {
+            width: 100%;
+            max-width: 700px;
+            background: rgba(255, 255, 255, 0.05); 
+            padding: 50px 40px;
+            border-radius: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.3); 
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35),
+                        0 0 40px rgba(255, 255, 255, 0.05),
+                        inset 0 0 20px rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            margin: auto;
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+            transition: transform 0.2s ease-out, box-shadow 0.3s ease;
+        }
+
+        .page-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: rotate(45deg);
+            transition: 0.5s;
+            pointer-events: none;
+        }
+
+        .page-container:hover::before {
+            left: 100%;
+        }
+
+        .page-1 { font-family: 'Amiri', serif; }
+        .page-2 { font-family: 'Tajawal', sans-serif; }
+        .page-3 { font-family: 'Reem Kufi', sans-serif; }
+        
+        .page-title {
+            color: #ffd700;
+            font-size: 36px;
+            font-weight: 900;
+            margin-bottom: 25px;
+            letter-spacing: 1px;
+            text-shadow: 0 0 20px rgba(255, 105, 180, 0.8), 0 0 40px rgba(255, 215, 0, 0.4);
+        }
+
+        .highlight {
+            color: #ff3385;
+            text-shadow: 0 0 12px rgba(255, 51, 133, 0.8);
+            font-weight: 900;
+        }
+
+        .page-content {
+            font-size: 21px;
+            line-height: 2.1;
+            color: #ffffff;
+            text-shadow: 0 3px 12px rgba(0,0,0,0.95); 
+            font-weight: 700;
+        }
+
+        /* ==========================================================================
+           🔘 4. الأزرار والمفاتيح التفاعلية المحسنة
+           ========================================================================== */
+        .nav-buttons {
+            margin-top: 45px;
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            width: 100%;
+        }
+
+        .nav-btn, .btn, .secret-btn {
+            background: linear-gradient(45deg, #ff1493, #aa00ff, #8a2be2);
+            background-size: 200% auto;
+            color: white;
+            border: none;
+            padding: 15px 38px;
+            font-size: 17px;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(255, 20, 147, 0.35);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            z-index: 15;
+        }
+
+        .nav-btn:hover, .btn:hover, .secret-btn:hover {
+            background-position: right center;
+            transform: translateY(-4px) scale(1.04);
+            box-shadow: 0 12px 28px rgba(255, 20, 147, 0.5), 0 0 20px #ff69b4;
+        }
+
+        .nav-btn:active, .btn:active {
+            transform: translateY(-1px) scale(0.98);
+        }
+
+        /* ==========================================================================
+           🔒 5. بوابة الدخول الملكية ونظام التفتيش الفاخر
+           ========================================================================== */
+        #lock-screen {
+            background: radial-gradient(circle, #0d0015 0%, #000000 100%);
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: 99999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .lock-box {
+            padding: 50px 40px;
+            border-radius: 28px;
+            background: rgba(15, 2, 25, 0.85);
+            border: 2px solid rgba(138, 43, 226, 0.5);
+            width: 90%;
+            max-width: 460px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 0 60px rgba(138, 43, 226, 0.4), inset 0 0 20px rgba(255,255,255,0.05);
+        }
+
+        .lock-input {
+            width: 100%;
+            padding: 16px;
+            border-radius: 14px;
+            border: 2px solid #ff1493;
+            background: rgba(0,0,0,0.7);
+            color: #ffffff;
+            text-align: center;
+            font-size: 22px;
+            font-weight: 700;
+            margin: 25px 0;
+            letter-spacing: 3px;
+            box-shadow: 0 0 15px rgba(255, 20, 147, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .lock-input:focus {
+            box-shadow: 0 0 25px rgba(255, 20, 147, 0.5);
+            border-color: #ffd700;
+        }
+
+        /* ==========================================================================
+           🎬 6. لوحة العروض الجمالية للعداد والألعاب
+           ========================================================================== */
+        #intro-screen { 
+            background: #000000; 
+            position: fixed; 
+            width: 100%; 
+            height: 100%; 
+            z-index: 99998; 
+            display: none; 
+            justify-content: center; 
+            align-items: center; 
+            flex-direction: column; 
+        }
+
+        .intro-text-container { max-width: 85%; text-align: center; }
+
+        .intro-scene {
+            font-size: 32px;
+            color: #ffd700;
+            font-family: 'Amiri', serif;
+            opacity: 0;
+            display: none;
+            line-height: 2;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.9);
+        }
+        
+        .cinema-fade {
+            display: block;
+            animation: cinemaEffect 4.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes cinemaEffect {
+            0% { opacity: 0; transform: scale(0.85) translateY(25px); filter: blur(12px); }
+            15% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+            85% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+            100% { opacity: 0; transform: scale(1.1) translateY(-25px); filter: blur(8px); }
+        }
+
+        #luna-cat {
+            position: fixed; bottom: 15px; left: -80px; font-size: 48px;
+            z-index: 1000; pointer-events: none;
+            animation: catWalk 24s linear infinite;
+            transition: transform 0.4s ease, bottom 0.4s ease;
+        }
+        @keyframes catWalk {
+            0% { left: -80px; transform: scaleX(1); }
+            45% { left: calc(100vw + 80px); transform: scaleX(1); }
+            50% { left: calc(100vw + 80px); transform: scaleX(-1); }
+            95% { left: -80px; transform: scaleX(-1); }
+            100% { left: -80px; transform: scaleX(1); }
+        }
+        .cat-jump { bottom: 85px !important; transform: scale(1.6) rotate(360deg) !important; }
+
+        .counter-grid { display: flex; justify-content: space-around; margin: 35px 0; gap: 12px; }
+        .counter-box {
+            background: rgba(255, 255, 255, 0.06);
+            padding: 22px 12px; border-radius: 20px; width: 115px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            transform: translateZ(30px);
+        }
+        .counter-number { font-size: 38px; font-weight: 900; text-shadow: 0 0 15px currentColor; }
+        #years-count { color: #ff3366; } #months-count { color: #33ccff; } #days-count { color: #ffcc00; }
+        .counter-label { font-size: 15px; margin-top: 8px; color: #ffffff; font-weight: 700; }
+
+        .gift-box { font-size: 100px; cursor: pointer; animation: elegantHeartbeat 1.3s infinite ease-in-out; margin: 30px 0; display: inline-block; transition: transform 0.3s; }
+        .gift-box:hover { transform: scale(1.15); }
+        @keyframes elegantHeartbeat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
+        
+        .game-area { position: relative; width: 100%; height: 320px; background: rgba(0, 0, 0, 0.25); border: 2px dashed rgba(255, 255, 255, 0.35); border-radius: 24px; margin-top: 20px; overflow: hidden; backdrop-filter: blur(6px); }
+        .game-heart { position: absolute; font-size: 40px; cursor: pointer; user-select: none; filter: drop-shadow(0 0 10px #ff0055); transform: scale(1); transition: transform 0.1s; }
+        .game-heart:active { transform: scale(1.4); }
+        
+        .wish-stars { display: flex; justify-content: center; gap: 22px; font-size: 40px; margin: 30px 0; }
+        .wish-star { cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); } 
+        .wish-star:hover { transform: scale(1.5) rotate(15deg); text-shadow: 0 0 15px #ffd700; }
+        
+        .secret-box { display: flex; flex-direction: column; gap: 16px; align-items: center; margin: 25px 0; }
+        #secretText, #wishText { margin-top: 25px; font-size: 19px; min-height: 65px; white-space: pre-wrap; color: #ffffff; line-height: 1.8; padding: 18px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255,255,255,0.25); backdrop-filter: blur(12px); border-radius: 14px; width: 100%; text-shadow: 0 2px 4px #000; box-shadow: inset 0 0 10px rgba(0,0,0,0.2); }
+        
+        .princess-photo { width: 195px; height: 195px; margin: 0 auto 25px; border: 4px solid #ff1493; border-radius: 50%; overflow: hidden; box-shadow: 0 0 35px rgba(255, 20, 147, 0.7); transform: translateZ(40px); }
+        #typingLove { font-size: 20px; white-space: pre-wrap; margin-top: 20px; line-height: 1.8; text-align: right; color: #ffffff; font-weight: 700; text-shadow: 0 2px 6px #000; }
+
+        /* تفجيرات تفاعلية ممتازة */
+        .click-particle { position: fixed; pointer-events: none; z-index: 99999; animation: clickBoom 1.3s cubic-bezier(0.1, 0.8, 0.25, 1) forwards; filter: drop-shadow(0 0 12px currentColor); will-change: transform, opacity; }
+        @keyframes clickBoom { 0% { transform: translate(0,0) scale(1.3) rotate(0deg); opacity: 1; } 100% { transform: translate(var(--cx), var(--cy)) scale(2.3) rotate(var(--rot)); opacity: 0; } }
+
+        /* إشعارات زجاجية ملكية مدمجة */
+        .glass-toast {
+            position: fixed; top: 25px; left: 50%; transform: translateX(-50%) translateY(-100px);
+            background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255,255,255,0.3);
+            padding: 15px 30px; border-radius: 50px; backdrop-filter: blur(15px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3); z-index: 100000; color: #fff;
+            font-weight: bold; font-size: 18px; pointer-events: none;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .glass-toast.show { transform: translateX(-50%) translateY(0); }
+    </style>
+</head>
+<body>
+
+    <canvas id="bg-canvas"></canvas>
+    
+    <audio id="main-track" loop></audio>
+    <div id="luna-cat">🐈</div>
+    <div id="toast" class="glass-toast">👑 تفاعل سحري تم بنجاح!</div>
+
+    <div id="lock-screen">
+        <div class="lock-box">
+            <h2 style="color: #ff69b4; font-size: 24px; font-weight: 900; margin: 0;">👑 اعتذار خاص لأميرتي 👑</h2>
+            <p style="color: #ccc; font-size: 15px; line-height: 1.6; margin-top: 10px;">
+                يرجى إدخال كلمة السر للاستمرار والدخول لقلبي<br>
+                <span style="color:#ffd700; font-weight: 700;">كلمة السر المطلوبة: (17072010)</span>
+            </p>
+            <input type="password" id="pass-field" class="lock-input" placeholder="••••••••">
+            <button class="btn" onclick="checkGatePassword(event)">افتح البوابة السحرية ✨</button>
+        </div>
+    </div>
+
+    <div id="intro-screen">
+        <div class="intro-text-container">
+            <div class="intro-scene" id="scene-1">Youssef Studios Presents...</div>
+            <div class="intro-scene" id="scene-2">أحياناً تسرقنا الحياة والمسؤوليات غصباً عنا... 🌌</div>
+            <div class="intro-scene" id="scene-3">لكن المكانة الحقيقية في القلب لا تتغير أبداً.. 👑</div>
+            <div class="intro-scene" id="scene-4">إلى من قصرت في حقها وتأخرت عليها بالرد.. ❤️</div>
+            <div class="intro-scene" id="scene-5">أتمنى أن تتقبلي هذا الاعتذار البسيط المصنوع بحب.. 🎬✨</div>
+        </div>
+    </div>
+
+    <div class="screen page-1" id="page-1">
+        <div class="page-container">
+            <h1 class="page-title">👑 أنا آسف — I'm Sorry 👑</h1>
+            <p style="font-size: 15px; color: #ffd700; margin: 0; font-weight: 700;">To My Patient and Precious Princess</p>
+            <div style="font-size:80px; margin:20px 0;">😔❤️✨</div>
+            <p class="page-content">
+                يا <span class="highlight">جانفيزا</span>...<br>
+                عارف إن كلامي وتواصلي قلّ، وعارف إن التأخير في الرد بيضايق. بس والله غصب عني والضغط والانشغال هما السبب. أنا بجد آسف جداً على أي لحظة خليتك تحسي فيها بملل أو إهمال. ✨
+            </p>
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="nextPage(event)">التالي ✨</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="screen page-2" id="page-2">
+        <div class="page-container">
+            <h1 class="page-title">👼 غياب خارج عن إرادتي 👼</h1>
+            <div style="font-size:80px; margin:20px 0;">🥺🌌💤</div>
+            <p class="page-content">
+                يا <span class="highlight">جانفيزا</span>... غيابي وتأخري مش معناه أبداً إن مكانتك قلت، بالعكس. في وسط كل دوشة اليوم والضغط، بيفضل دايماً كلامك هو الحاجة اللطيفة اللي بستناها عشان تفرحني وتنسيني أي تعب. 🤍
+            </p>
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="prevPage(event)">⬅ السابق</button>
+                <button class="nav-btn" onclick="nextPage(event)">التالي ✨</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="screen page-3" id="page-3">
+        <div class="page-container">
+            <h1 class="page-title">🌹 لسة في مكاني 🌹</h1>
+            <div style="font-size:80px; margin:20px 0;">🌹🕊️❤️</div>
+            <p class="page-content">
+                يا <span class="highlight">جانفيزا</span>... بعتذر لروحك الجميلة وقلبك الأبيض. وجودك في حياتي نعمة كبيرة وصبرك عليا وعلى انشغالي بيخليني ممتن ليكي كل يوم أكتر من اليوم اللي قبله. ✨
+            </p>
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="prevPage(event)">⬅ السابق</button>
+                <button class="nav-btn" onclick="nextPage(event)">التالي ✨</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="screen page-4" id="page-4">
+        <div class="page-container">
+            <h1 class="page-title">🌙 عداد الوقت والذكريات 🌙</h1>
+            <div style="font-size:70px; margin:15px 0;">🌕✨💜</div>
+            <div class="counter-grid">
+                <div class="counter-box"><div class="counter-number" id="years-count">0</div><div class="counter-label">سنة ❤️</div></div>
+                <div class="counter-box"><div class="counter-number" id="months-count">0</div><div class="counter-label">شهر 🌙</div></div>
+                <div class="counter-box"><div class="counter-number" id="days-count">0</div><div class="counter-label">يوم ✨</div></div>
+            </div>
+            <p style="font-size:17px; color:#ffffff; font-weight: 700; text-shadow: 0 2px 4px #000;">🎂 ذكرياتنا وجمال وجودك في الدنيا (مواليد 2010).</p>
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="prevPage(event)">⬅ السابق</button>
+                <button class="nav-btn" onclick="nextPage(event)">التالي ✨</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="screen page-5" id="page-5">
+        <div class="page-container">
+            <h1 class="page-title">🎁 صندوق الاعتذار والصلح 🎁</h1>
+            <p class="page-content">اضغطي على الصندوق ليفتح ويخرج منه اعتذاري الصادق لقلبكِ.. ✨</p>
+            <div id="giftBox" class="gift-box" onclick="openMagicGiftStage(event)">🎁</div>
+            <div id="giftInside" style="display:none;">
+                <div style="font-size:80px;">💐🍬🧸❤️</div>
+                <h2 style="color:#FFD700; font-weight: 900; margin: 15px 0; text-shadow: 0 2px 4px #000;">اعتذار من القلب</h2>
+                <p class="page-content">صافي يا لبن؟ حليب يا قشطة؟ أتمنى من كل قلبي إن ضحكتك ترجع وتسامحيني على التأخير والانشغال يا أجمل هدية في حياتي. ❤️</p>
+            </div>
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="prevPage(event)">⬅ السابق</button>
+                <button class="nav-btn" onclick="nextPage(event)">التالي ✨</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="screen page-6" id="page-6">
+        <div class="page-container">
+            <h1 class="page-title">💌 رسائل صلح سرية 💌</h1>
+            <div class="secret-box">
+                <button class="secret-btn" style="width:85%" onclick="openSecret(0, event)">💌 الرسالة الأولى</button>
+                <button class="secret-btn" style="width:85%" onclick="openSecret(1, event)">🌹 الرسالة الثانية</button>
+                <button class="secret-btn" style="width:85%" onclick="openSecret(2, event)">❤️ الرسالة الثالثة</button>
+                <div id="secretText">اضغطي على إحدى الرسائل لقراءتها...</div>
+            </div>
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="prevPage(event)">⬅ السابق</button>
+                <button class="nav-btn" onclick="nextPage(event)">التالي ✨</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="screen page-7" id="page-7">
+        <div class="page-container">
+            <h1 class="page-title">🎮 لعبة صلح قلوب يوسف 🎮</h1>
+            <p style="font-size:16px; font-weight: 700; text-shadow: 0 1px 4px #000;">اجمعي القلوب الـ 10 الطائرة بسرعة كدليل على قبول الاعتذار والصلح! ❤️</p>
+            <div class="game-score" style="text-shadow: 0 2px 4px #000;">القلوب المجمعة حالياً: <span id="score" style="color:#ff1493; font-size:24px;">0</span> / 10</div>
+            <div class="game-area" id="heartGame"></div>
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="prevPage(event)">⬅ السابق</button>
+                <button class="nav-btn" onclick="nextPage(event)">التالي ✨</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="screen page-8" id="page-8">
+        <div class="page-container">
+            <h1 class="page-title">🌌 أمنيات النجوم لصلحنا 🌌</h1>
+            <p class="page-content">اضغطي على أي نجمة متلألئة لقراءة وعود وأمنيات قلبي ليكي: ✨</p>
+            <div class="wish-stars">
+                <div class="wish-star" onclick="showWish(0, event)">⭐</div>
+                <div class="wish-star" onclick="showWish(1, event)">🌟</div>
+                <div class="wish-star" onclick="showWish(2, event)">✨</div>
+                <div class="wish-star" onclick="showWish(3, event)">💫</div>
+                <div class="wish-star" onclick="showWish(4, event)">🌠</div>
+            </div>
+            <div id="wishText">تنتظرك أمنية دافئة خلف كل نجمة...</div>
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="prevPage(event)">⬅ السابق</button>
+                <button class="nav-btn" onclick="nextPage(event)">التالي ✨</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="screen page-9" id="page-9">
+        <div class="page-container">
+            <div style="border: 1px solid rgba(255, 255, 255, 0.3); padding: 25px; background: rgba(255,255,255,0.04); backdrop-filter: blur(10px); border-radius: 15px;">
+                <h1 style="color: #ffd700; font-size: 26px; font-weight: 900; margin: 0 0 15px 0;">🏆 Certificate of Tolerance 🏆</h1>
+                <p style="font-size: 17px; line-height: 2; text-shadow: 0 2px 4px #000;">
+                    تُمنح هذه الشهادة الملكية الفاخرة والموثقة إلى الأميرة المتسامحة ذات القلب الأبيض الكبير أرق واحدة في الكون:<br>
+                    <span class="highlight" style="font-size: 32px;">Janfiza</span><br><br>
+                    تقديراً لصبرها وتحملها لانشغال وتأخر يوسف في الرد، وحصولها على لقب: <br>
+                    <span style="color: #ffd700; font-size: 24px; font-weight: 900;">القلب الأكثر طيبة وتسامحاً لعام 2026 👑</span>
+                </p>
+                <p style="color: #ffd700; font-size: 20px; margin-top: 25px; font-weight: 700; text-shadow: 0 2px 4px #000;">بكل مودة وأسف وحب: يوسف ❤️</p>
+            </div>
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="prevPage(event)">⬅ السابق</button>
+                <button class="nav-btn" onclick="nextPage(event)">التالي ✨</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="screen page-10" id="page-10">
+        <div class="page-container">
+            <h1 class="page-title">🌹 وعد بالاهتمام والعودة 🌹</h1>
+            <div class="princess-photo">
+                <img src="princess.jpg" alt="Janfiza" style="width:100%; height:100%; object-fit:cover;">
+            </div>
+            <div id="typingLove"></div>
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="prevPage(event)">⬅ السابق</button>
+                <button class="nav-btn" onclick="nextPage(event)">التالي ✨</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="screen page-11" id="page-11">
+        <div class="page-container">
+            <h1 class="page-title">🎬 وبدأنا عهد صلح جديد... 🎬</h1>
+            <h2 style="color: #ffd700; font-size: 28px; font-weight: 900; text-shadow: 0 2px 4px #000;">مكانتك ثابتة في القلب مهما زاد الانشغال. ❤️</h2>
+            <p class="page-content" style="font-size: 26px; color: #ff69b4; font-weight: 900; margin: 20px 0;">يوسف ❤️ جانفيزا</p>
+            <p style="font-size: 15px; color: #eee; font-weight: 700; text-shadow: 0 2px 4px #000;">✨ اعتذار خاص وعهد جديد مليء بالاهتمام والود الدائم ✨</p>
+            <div style="margin-top: 35px;">
+                <button class="btn" onclick="restartJourney(event)">🔄 تصفحي رسائل الاعتذار مجدداً</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        const totalPages = 11;
+
+        // مصفوفة المناظر الطبيعية عالية الدقة المتبدلة وراء الكروت الزجاجية
+        const landscapes = [
+            "https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?q=80&w=1920", 
+            "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1920", 
+            "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?q=80&w=1920", 
+            "https://images.unsplash.com/photo-1518837695005-2083093ee35b?q=80&w=1920", 
+            "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=1920", 
+            "https://images.unsplash.com/photo-1418065460487-3e41a6c84dc5?q=80&w=1920", 
+            "https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=1920", 
+            "https://images.unsplash.com/photo-1501854140801-50d01698950b?q=80&w=1920", 
+            "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=1920", 
+            "https://images.unsplash.com/photo-1475924156734-496f6cac6ec1?q=80&w=1920", 
+            "https://images.unsplash.com/photo-1502082553048-f009c37129b9?q=80&w=1920"  
+        ];
+
+        const songs = [
+            "song1.mp3", "song2.mp3", "song3.mp3", "song4.mp3", "song5.mp3",
+            "song6.mp3", "song7.mp3", "song8.mp3", "song9.mp3", "song10.mp3", "song11.mp3"
+        ];
+
+        const secretMessages = [
+            "💖 يا جانفيزا... بكتبلك الكلام ده وأنا بجد متضايق إني كنت السبب في زعلك بسبب غيابي أو تأخيري في الرد. تذكري دايماً إن غيابي عن الشات مش غياب عن البال والقلب. ❤️ يوسف",
+            "🌹 في وسط زحمة اليوم، بيخطر على بالي دايماً ضحكتك الجميلة وكلامك اللي بيفتح النفس. بوعدك إني هحاول بكل جهدي أرتب وقتي ومخليش حاجة تبعدني عنك تاني. ✨",
+            "🎂 سامحيني يا أميرتي... القلوب الطيبة دايماً بتسامح، وأنا عارف إن قلبك مفيش في نقاءه وطيبته في الدنيا دي كلها. بتمنى نقفل صفحة الزعل ونبدأ من جديد. مع كل ودي، يوسف ❤️"
+        ];
+
+        const wishes = [
+            "🌹 الوعد الأول: هحاول دايماً أرد عليكي في أسرع وقت ومخليش الانتظار يملأ قلبك.",
+            "❤️ الوعد الثاني: مفيش زعل هيدخل بينا بسبب ضغط الشغل أو الانشغال، وهفضل محافظ على مكانتك.",
+            "✨ الأمنية الثالثة: ربنا يديم رضاكي ويبعد عن عيونك وصوتك أي حزن أو ضيق.",
+            "🌙 الأمنية الرابعة: تفضل ضحكتك منورة دايماً لأنها بتهون عليا التعب وتديني طاقة إيجابية.",
+            "💖 الأمنية الخامسة والأخيرة: يفضل الود والصلح عامر بينا وتسامحيني بقلبك الكبير."
+        ];
+
+        const loveMessage = `جانفيزا...\n\nلو كان الاعتذار بوردة...\nكنت قطفتلك كل ورد البساتين وصنعت منه تاج فوق راسك.\n\nولو كان الأسف بكلمات...\nكنت كتبت مجلدات اعتذر فيها عن كل دقيقة انشغلت فيها عنك.\n\nأنا بجد أسف على التقصير يا أميرتي الغالية...\n\nأتمنى تقبلي الصلح والاعتذار من كل قلبك 🥺❤️...\n\nYoussef ❤️`;
+
+        // ==========================================================================
+        // 🔮 محرك الجزيئات الخلفية المتقدم الـ Canvas
+        // ==========================================================================
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let particlesArray = [];
+        
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 3 + 1;
+                this.speedX = Math.random() * 0.6 - 0.3;
+                this.speedY = Math.random() * 0.6 - 0.3;
+                this.color = `rgba(255, 255, 255, ${Math.random() * 0.4 + 0.1})`;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x > canvas.width) this.x = 0;
+                else if (this.x < 0) this.x = canvas.width;
+                if (this.y > canvas.height) this.y = 0;
+                else if (this.y < 0) this.y = canvas.height;
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particlesArray = [];
+            for (let i = 0; i < 75; i++) {
+                particlesArray.push(new Particle());
+            }
+        }
+        initParticles();
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particlesArray.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        window.addEventListener('mousemove', (e) => {
+            particlesArray.forEach(p => {
+                const dx = p.x - e.clientX;
+                const dy = p.y - e.clientY;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                if(dist < 120) {
+                    p.x += dx * 0.02;
+                    p.y += dy * 0.02;
+                }
+            });
+        });
+
+        // ==========================================================================
+        // 🦋 محرك تساقط الفراشات والقلوب التلقائي المتقدم
+        // ==========================================================================
+        function startContinuousAmbientParticles() {
+            const symbols = ['🦋', '❤️', '✨', '💖', '🌸', '🌟'];
+            const colors = ['#ff007f', '#ff00ff', '#ff00aa', '#ffd700', '#00f5ff', '#ffffff', '#ba55d3', '#ff69b4'];
+            
+            setInterval(() => {
+                if (document.getElementById("lock-screen").style.display === "none") {
+                    const p = document.createElement('div');
+                    p.className = 'ambient-particle';
+                    p.innerHTML = symbols[Math.floor(Math.random() * symbols.length)];
+                    
+                    const driftEnd = (Math.random() * 400 - 200) + "px";
+                    const rotEnd = (Math.random() * 360 - 180) + "deg";
+                    
+                    p.style.left = Math.random() * 100 + "vw";
+                    p.style.fontSize = (Math.random() * 26 + 24) + "px"; 
+                    p.style.color = colors[Math.floor(Math.random() * colors.length)];
+                    
+                    p.style.setProperty('--drift-end', driftEnd);
+                    p.style.setProperty('--rot-end', rotEnd);
+                    
+                    document.body.appendChild(p);
+                    setTimeout(() => p.remove(), 8000);
+                }
+            }, 220);
+        }
+
+        window.onload = function() {
+            startContinuousAmbientParticles();
+            initTiltEffect();
+        };
+
+        // ==========================================================================
+        // 🧲 تأثير اللمعان والميلان المغناطيسي ثلاثي الأبعاد للكروت
+        // ==========================================================================
+        function initTiltEffect() {
+            document.querySelectorAll('.page-container').forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    const xc = rect.width / 2;
+                    const yc = rect.height / 2;
+                    
+                    const tiltX = (yc - y) / 16;
+                    const tiltY = (x - xc) / 16;
+                    
+                    card.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale3d(1.02, 1.02, 1.02)`;
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = `rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+                });
+            });
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById("toast");
+            toast.innerText = msg;
+            toast.classList.add("show");
+            setTimeout(() => toast.classList.remove("show"), 3500);
+        }
+
+        function triggerInteractiveClickEffects(e) {
+            const cat = document.getElementById("luna-cat");
+            if(cat) {
+                cat.classList.add("cat-jump");
+                setTimeout(() => { cat.classList.remove("cat-jump"); }, 500);
+            }
+
+            if (!e) return;
+            const x = e.clientX;
+            const y = e.clientY;
+            const icons = ['🦋', '❤️', '✨', '💖'];
+            const colors = ['#ff007f', '#ff00ff', '#ffd700', '#00f5ff'];
+            
+            for (let i = 0; i < 18; i++) {
+                const p = document.createElement('div');
+                p.className = 'click-particle';
+                p.innerHTML = icons[Math.floor(Math.random() * icons.length)];
+                p.style.left = x + "px";
+                p.style.top = y + "px";
+                p.style.fontSize = (Math.random() * 26 + 20) + "px";
+                p.style.color = colors[Math.floor(Math.random() * colors.length)];
+                
+                p.style.setProperty('--cx', (Math.random() - 0.5) * 360 + "px");
+                p.style.setProperty('--cy', (Math.random() - 0.5) * 360 - 100 + "px");
+                p.style.setProperty('--rot', (Math.random() * 360) + "deg");
+                
+                document.body.appendChild(p);
+                setTimeout(() => p.remove(), 1300);
+            }
+        }
+
+        function checkGatePassword(e) {
+            const val = document.getElementById("pass-field").value.trim();
+            if (val === "17072010" || val === "17-07-2010") {
+                triggerInteractiveClickEffects(e);
+                document.getElementById("lock-screen").style.display = "none";
+                showToast("👑 أهلاً بكِ يا أميرة الكون جانفيزا 👑");
+                playTrackForPage(1);
+                runCinemaIntro();
+            } else {
+                alert("❌ كلمة السر غير صحيحة يا أميرة! حاول مرة أخرى.");
+            }
+        }
+
+        function runCinemaIntro() {
+            const introScreen = document.getElementById("intro-screen");
+            introScreen.style.display = "flex";
+
+            const scenes = ["scene-1", "scene-2", "scene-3", "scene-4", "scene-5"];
+            let delay = 0;
+
+            scenes.forEach((sceneId, index) => {
+                setTimeout(() => {
+                    if (index > 0) {
+                        document.getElementById(scenes[index - 1]).classList.remove("cinema-fade");
+                    }
+                    document.getElementById(sceneId).classList.add("cinema-fade");
+                }, delay);
+                delay += 4300;
+            });
+
+            setTimeout(() => {
+                introScreen.style.display = "none";
+                showPage(1);
+            }, delay);
+        }
+
+        function playTrackForPage(pageNumber) {
+            const track = document.getElementById("main-track");
+            if (track) {
+                track.src = songs[pageNumber - 1];
+                track.play().catch(e => console.log("تحتاج لتفاعل صوتي"));
+            }
+        }
+
+        function showPage(pageNumber) {
+            document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+            const targetPage = document.getElementById(`page-${pageNumber}`);
+            if (targetPage) {
+                setTimeout(() => { targetPage.classList.add("active"); }, 50);
+            }
+
+            document.body.style.background = `linear-gradient(rgba(10, 0, 20, 0.25), rgba(20, 0, 35, 0.35)), url('${landscapes[pageNumber - 1]}') no-repeat center center fixed`;
+            document.body.style.backgroundSize = "cover";
+
+            if(document.getElementById("intro-screen").style.display !== "flex") {
+                playTrackForPage(pageNumber);
+            }
+
+            if (pageNumber === 4) updateAgeCounterSmooth();
+            if (pageNumber === 7) startHeartGame();
+            if (pageNumber === 10) typingMessage();
+            if (pageNumber === 11) {
+                for(let i=0; i<4; i++) {
+                    setTimeout(() => { triggerInteractiveClickEffects(null); }, i * 500);
+                }
+            }
+        }
+
+        function nextPage(e) { triggerInteractiveClickEffects(e); if (currentPage < totalPages) { currentPage++; showPage(currentPage); } }
+        function prevPage(e) { triggerInteractiveClickEffects(e); if (currentPage > 1) { currentPage--; showPage(currentPage); } }
+        
+        function openSecret(id, e) { 
+            triggerInteractiveClickEffects(e); 
+            document.getElementById("secretText").innerText = secretMessages[id]; 
+            showToast("💌 تم فك تشفير الرسالة السرية بنجاح!");
+        }
+        
+        function showWish(id, e) { 
+            triggerInteractiveClickEffects(e); 
+            document.getElementById("wishText").innerText = wishes[id]; 
+            showToast("✨ نجمة أمنية جديدة تضيء سماءك!");
+        }
+        
+        function openMagicGiftStage(e) {
+            triggerInteractiveClickEffects(e);
+            const gift = document.getElementById("giftBox");
+            gift.innerHTML = "💥";
+            setTimeout(() => {
+                gift.style.display = "none";
+                document.getElementById("giftInside").style.display = "block";
+                showToast("🎁 فُتح الصندوق الملكي بنجاح!");
+            }, 500);
+        }
+
+        let score = 0;
+        function startHeartGame() {
+            const game = document.getElementById("heartGame");
+            game.innerHTML = ""; score = 0;
+            document.getElementById("score").innerHTML = score;
+            for (let i = 0; i < 10; i++) {
+                const heart = document.createElement("div");
+                heart.className = "game-heart";
+                heart.innerHTML = "❤️";
+                heart.style.left = Math.random() * 88 + "%";
+                heart.style.top = Math.random() * 76 + "%";
+                heart.onclick = function (e) {
+                    triggerInteractiveClickEffects(e);
+                    this.remove(); score++;
+                    document.getElementById("score").innerHTML = score;
+                    if (score === 10) {
+                        setTimeout(() => { 
+                            showToast("🏆 مبروك الفوز الكامل بالأحجار العاشرة!");
+                            alert("❤️ مبروك يا جانفيزا فزتي باللعبة! لقد تم الصلح بنجاح وفاز قلب يوسف بمسامحتكِ للأبد ❤️"); 
+                        }, 300);
+                    }
+                };
+                game.appendChild(heart);
+            }
+        }
+
+        let typingTimer;
+        function typingMessage() {
+            let i = 0; let box = document.getElementById("typingLove");
+            if (!box) return; box.innerHTML = "";
+            clearInterval(typingTimer);
+            typingTimer = setInterval(() => {
+                box.innerHTML += loveMessage.charAt(i); i++;
+                if (i >= loveMessage.length) clearInterval(typingTimer);
+            }, 45);
+        }
+
+        function updateAgeCounterSmooth() {
+            const birthDate = new Date("2010-07-17T00:00:00");
+            const today = new Date();
+            let years = today.getFullYear() - birthDate.getFullYear();
+            let months = today.getMonth() - birthDate.getMonth();
+            let days = today.getDate() - birthDate.getDate();
+            if (days < 0) { months--; days += new Date(today.getFullYear(), today.getMonth(), 0).getDate(); }
+            if (months < 0) { years--; months += 12; }
+            
+            document.getElementById("years-count").innerText = years;
+            document.getElementById("months-count").innerText = months;
+            document.getElementById("days-count").innerText = days;
+        }
+
+        function restartJourney(e) { triggerInteractiveClickEffects(e); currentPage = 1; showPage(currentPage); }
+    </script>
+</body>
+</html>
